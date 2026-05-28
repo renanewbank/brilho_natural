@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 Brilho Natural
 =======
 # Brilho Natural
