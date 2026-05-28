@@ -29,9 +29,4 @@ O Vite vai subir o projeto localmente, normalmente em `http://localhost:5173`.
 npm run build
 ```
 
-## Observacoes da migracao
 
-- O bootstrap do Expo foi removido.
-- A interface continua escrita com componentes `react-native`, mas agora renderizada no navegador com `react-native-web`.
-- Os scripts antigos `start`, `android`, `ios` e `web` deixaram de existir.
->>>>>>> 75b8f71 (first commit)
