@@ -1,0 +1,35 @@
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    marginBottom: 16,
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    flex: 1,
+    margin: 6,
+  },
+  imagem: { width: '100%', height: 160 },
+  badge: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    backgroundColor: '#7B9E4F',
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  badgeTexto: { color: '#FFF', fontSize: 10, fontWeight: 'bold' },
+  info: { padding: 12 },
+  categoria: { fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: 1 },
+  nome: { fontSize: 14, fontWeight: 'bold', color: '#333', marginTop: 2, marginBottom: 4 },
+  rodape: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
+  preco: { fontSize: 16, fontWeight: 'bold', color: '#7B9E4F' },
+  botao: { backgroundColor: '#7B9E4F', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 5 },
+  botaoTexto: { color: '#FFF', fontSize: 12, fontWeight: 'bold' },
+});

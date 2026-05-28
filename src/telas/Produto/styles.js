@@ -1,0 +1,42 @@
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FAFAF7' },
+  buscaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+    margin: 16,
+    borderRadius: 30,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+  },
+  buscaIcone: { fontSize: 16, marginRight: 8 },
+  buscaInput: { flex: 1, fontSize: 15, color: '#333' },
+  limpar: { fontSize: 16, color: '#999', padding: 4 },
+  categoriasContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    marginBottom: 8,
+    gap: 8,
+  },
+  categoriaChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: 20,
+    backgroundColor: '#F0EDE8',
+  },
+  categoriaAtiva: { backgroundColor: '#7B9E4F' },
+  categoriaTexto: { fontSize: 13, color: '#666', fontWeight: '500' },
+  categoriaTextoAtivo: { color: '#FFF', fontWeight: 'bold' },
+  contagem: { fontSize: 12, color: '#999', paddingHorizontal: 16, marginBottom: 4 },
+  lista: { paddingHorizontal: 10, paddingBottom: 20 },
+  vazio: { alignItems: 'center', paddingTop: 60 },
+  vazioEmoji: { fontSize: 48, marginBottom: 12 },
+  vazioTexto: { fontSize: 15, color: '#999' },
+});
