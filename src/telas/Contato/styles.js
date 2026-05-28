@@ -30,6 +30,7 @@ export default StyleSheet.create({
     shadowRadius: 3,
   },
   formularioTitulo: { fontSize: 16, fontWeight: 'bold', color: '#333', marginBottom: 16 },
+  formularioAjuda: { fontSize: 12, color: '#777', marginTop: -6, marginBottom: 16, lineHeight: 18 },
   sucessoBanner: {
     flexDirection: 'row',
     alignItems: 'center',

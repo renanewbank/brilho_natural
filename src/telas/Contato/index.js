@@ -19,10 +19,10 @@ export default function ContatoScreen({ navegarPara }) {
   const [enviando, setEnviando] = useState(false);
 
   const canais = [
-    { icone: '📧', titulo: 'E-mail', valor: 'contato@brilhonatural.com.br', cor: '#E3F2FD' },
-    { icone: '📱', titulo: 'WhatsApp', valor: '(13) 99999-1234', cor: '#E8F5E9' },
-    { icone: '🏪', titulo: 'Loja Física', valor: 'Rua das Flores, 321 - Santos/SP', cor: '#FFF3E0' },
-    { icone: '🕐', titulo: 'Horário', valor: 'Seg-Sex: 9h às 18h', cor: '#F3E5F5' },
+    { icone: '📧', titulo: 'E-mail', valor: 'suporte@brilhonatural.shop', cor: '#E3F2FD' },
+    { icone: '📱', titulo: 'WhatsApp', valor: '(13) 99125-8662', cor: '#E8F5E9' },
+    { icone: '☎️', titulo: 'Telefone', valor: '(13) 3040-2020', cor: '#FFF3E0' },
+    { icone: '🕐', titulo: 'Horário', valor: 'Segunda a sexta, das 10h às 18h', cor: '#F3E5F5' },
   ];
 
   const enviarMensagem = () => {
@@ -58,6 +58,9 @@ export default function ContatoScreen({ navegarPara }) {
         {/* Formulário */}
         <View style={styles.formulario}>
           <Text style={styles.formularioTitulo}>Enviar mensagem</Text>
+          <Text style={styles.formularioAjuda}>
+            Para assuntos relacionados a pedidos, informe o número do pedido na mensagem.
+          </Text>
 
           {enviado && (
             <View style={styles.sucessoBanner}>
@@ -102,9 +105,10 @@ export default function ContatoScreen({ navegarPara }) {
                 style={styles.picker}
               >
                 <Picker.Item label="Dúvida sobre produto" value="duvida" />
-                <Picker.Item label="Problema com pedido" value="pedido" />
+                <Picker.Item label="Número do pedido" value="pedido" />
+                <Picker.Item label="Prazo de entrega" value="prazo" />
                 <Picker.Item label="Troca ou devolução" value="troca" />
-                <Picker.Item label="Parceria / Revendedor" value="parceria" />
+                <Picker.Item label="Promoções" value="promocoes" />
                 <Picker.Item label="Outros" value="outros" />
               </Picker>
             </View>

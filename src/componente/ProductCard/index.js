@@ -4,6 +4,8 @@ import styles from './styles';
 import RatingStars from '../RatingStars';
 
 export default function ProductCard({ produto, navegarPara }) {
+  const mostrarDesconto = produto.precoOriginal && produto.precoOriginal > produto.preco;
+
   return (
     <TouchableOpacity
       style={styles.card}
@@ -16,14 +18,22 @@ export default function ProductCard({ produto, navegarPara }) {
           <Text style={styles.badgeTexto}>Destaque</Text>
         </View>
       )}
+      {!produto.disponivel && (
+        <View style={styles.badgeEsgotado}>
+          <Text style={styles.badgeTexto}>Esgotado</Text>
+        </View>
+      )}
       <View style={styles.info}>
         <Text style={styles.categoria}>{produto.categoria}</Text>
         <Text style={styles.nome} numberOfLines={2}>{produto.nome}</Text>
         <RatingStars nota={produto.nota} />
         <View style={styles.rodape}>
-          <Text style={styles.preco}>R$ {produto.preco.toFixed(2)}</Text>
-          <TouchableOpacity style={styles.botao} onPress={() => navegarPara('DetalheProduto', produto)}>
-            <Text style={styles.botaoTexto}>Ver</Text>
+          <View>
+            {mostrarDesconto ? <Text style={styles.precoOriginal}>De R$ {produto.precoOriginal.toFixed(2)}</Text> : null}
+            <Text style={styles.preco}>R$ {produto.preco.toFixed(2)}</Text>
+          </View>
+          <TouchableOpacity style={[styles.botao, !produto.disponivel && styles.botaoDesabilitado]} onPress={() => navegarPara('DetalheProduto', produto)}>
+            <Text style={styles.botaoTexto}>{produto.disponivel ? 'Ver' : 'Detalhes'}</Text>
           </TouchableOpacity>
         </View>
       </View>

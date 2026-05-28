@@ -28,6 +28,7 @@ export default StyleSheet.create({
   chaveResumo: { fontSize: 14, color: '#666' },
   valorResumo: { fontSize: 14, color: '#333', fontWeight: '500' },
   valorDesconto: { fontSize: 14, color: '#4CAF50', fontWeight: '600' },
+  freteInfo: { fontSize: 12, color: '#7B9E4F', marginBottom: 10 },
   divisor: { height: 1, backgroundColor: '#EEE', marginVertical: 10 },
   totalChave: { fontSize: 16, fontWeight: 'bold', color: '#222' },
   totalValor: { fontSize: 20, fontWeight: 'bold', color: '#7B9E4F' },

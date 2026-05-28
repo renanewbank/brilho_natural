@@ -135,8 +135,8 @@ export default function App() {
   };
 
   const aplicarCupom = () => {
-    if (cupom.trim().toUpperCase() === 'BRILHO10') {
-      setCupom('BRILHO10');
+    if (cupom.trim().toUpperCase() === 'APP10') {
+      setCupom('APP10');
       setCupomAplicado(true);
       return true;
     }
@@ -154,7 +154,7 @@ export default function App() {
   const resumoPedido = useMemo(() => {
     const subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
     const desconto = cupomAplicado ? subtotal * 0.1 : 0;
-    const frete = subtotal >= 150 ? 0 : 12.9;
+    const frete = 0;
     const total = subtotal - desconto + frete;
 
     return {

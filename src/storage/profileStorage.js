@@ -3,9 +3,9 @@ import { lerValor, salvarValor } from './baseStorage';
 const CHAVE_PERFIL = '@brilho-natural/perfil';
 
 const PERFIL_PADRAO = {
-  nome: 'Maria Silva',
-  email: 'maria@email.com',
-  telefone: '(13) 99999-0000',
+  nome: 'Cliente Brilho Natural',
+  email: '',
+  telefone: '',
   notifPromo: true,
   notifPedido: true,
   temaEscuro: false,

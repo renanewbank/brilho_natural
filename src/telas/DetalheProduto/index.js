@@ -68,8 +68,15 @@ export default function DetalheProdutoScreen({ produto, navegarPara, adicionarAo
 
   const abas = [
     { id: 'descricao', label: 'Descrição' },
-    { id: 'ingredientes', label: 'Ingredientes' },
+    { id: 'ingredientes', label: 'Composição' },
   ];
+  const mostrarDesconto = produtoAtual.precoOriginal && produtoAtual.precoOriginal > produtoAtual.preco;
+  const blocosDescricao = (abaSelecionada === 'descricao'
+    ? produtoAtual.descricao
+    : 'Consulte a embalagem do produto para composição completa e modo de uso.')
+    .split(/\n{2,}/)
+    .map((trecho) => trecho.trim())
+    .filter(Boolean);
 
   return (
     <View style={styles.container}>
@@ -98,7 +105,9 @@ export default function DetalheProdutoScreen({ produto, navegarPara, adicionarAo
 
           {carregandoDetalhe ? <Text style={styles.avisoApi}>Atualizando detalhes do produto...</Text> : null}
 
+          {mostrarDesconto ? <Text style={styles.precoOriginal}>De R$ {produtoAtual.precoOriginal.toFixed(2)}</Text> : null}
           <Text style={styles.preco}>R$ {produtoAtual.preco.toFixed(2)}</Text>
+          {!produtoAtual.disponivel ? <Text style={styles.indisponivel}>Produto indisponível no momento.</Text> : null}
 
           {/* Slider de quantidade */}
           <View style={styles.quantidadeContainer}>
@@ -135,13 +144,17 @@ export default function DetalheProdutoScreen({ produto, navegarPara, adicionarAo
             ))}
           </View>
 
-          <Text style={styles.textoConteudo}>
-            {abaSelecionada === 'descricao' ? produtoAtual.descricao : produtoAtual.ingredientes}
-          </Text>
+          <View style={styles.textoConteudo}>
+            {blocosDescricao.map((bloco) => (
+              <Text key={bloco} style={styles.textoParagrafo}>
+                {bloco}
+              </Text>
+            ))}
+          </View>
 
           {/* Selos */}
           <View style={styles.selosRow}>
-            {['🌱 Vegano', '♻️ Sustentável', '🐰 Cruelty-free'].map((s) => (
+            {['✨ Qualidade', '🛍️ Multimarcas', '💬 Atendimento'].map((s) => (
               <View key={s} style={styles.selo}>
                 <Text style={styles.seloTexto}>{s}</Text>
               </View>
@@ -157,7 +170,7 @@ export default function DetalheProdutoScreen({ produto, navegarPara, adicionarAo
           <CustomButton
             titulo={adicionado ? '✓ Adicionado!' : `Adicionar ao Carrinho · R$ ${(produtoAtual.preco * quantidade).toFixed(2)}`}
             onPress={handleAdicionar}
-            desabilitado={adicionado}
+            desabilitado={adicionado || !produtoAtual.disponivel}
           />
           <CustomButton
             titulo="Ver Carrinho"

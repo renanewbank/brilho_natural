@@ -21,6 +21,7 @@ export default StyleSheet.create({
   limpar: { fontSize: 16, color: '#999', padding: 4 },
   categoriasContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     paddingHorizontal: 12,
     marginBottom: 8,
     gap: 8,

@@ -16,11 +16,12 @@ export default StyleSheet.create({
   heroSlogan: { fontSize: 13, color: '#C8E6A0', letterSpacing: 1 },
   statsRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
     marginBottom: 20,
   },
   statCard: {
-    flex: 1,
+    width: '48%',
     backgroundColor: '#FFF',
     borderRadius: 12,
     padding: 12,
@@ -31,8 +32,8 @@ export default StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 3,
   },
-  statNumero: { fontSize: 16, fontWeight: 'bold', color: '#7B9E4F' },
-  statLabel: { fontSize: 10, color: '#999', marginTop: 2 },
+  statNumero: { fontSize: 15, fontWeight: 'bold', color: '#7B9E4F', textAlign: 'center' },
+  statLabel: { fontSize: 10, color: '#999', marginTop: 4, textAlign: 'center' },
   abasContainer: {
     flexDirection: 'row',
     backgroundColor: '#FFF',

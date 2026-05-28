@@ -12,9 +12,9 @@ import Header from '../../componente/Header';
 import CustomButton from '../../componente/CustomButton';
 
 export default function PerfilScreen({ navegarPara, perfil, pedidos, salvarPerfil }) {
-  const [nome, setNome] = useState(perfil?.nome || 'Maria Silva');
-  const [email, setEmail] = useState(perfil?.email || 'maria@email.com');
-  const [telefone, setTelefone] = useState(perfil?.telefone || '(13) 99999-0000');
+  const [nome, setNome] = useState(perfil?.nome || 'Cliente Brilho Natural');
+  const [email, setEmail] = useState(perfil?.email || '');
+  const [telefone, setTelefone] = useState(perfil?.telefone || '');
   const [editando, setEditando] = useState(false);
   const [notifPromo, setNotifPromo] = useState(perfil?.notifPromo ?? true);
   const [notifPedido, setNotifPedido] = useState(perfil?.notifPedido ?? true);
@@ -66,7 +66,7 @@ export default function PerfilScreen({ navegarPara, perfil, pedidos, salvarPerfi
             <Text style={styles.avatarLetra}>{nome.charAt(0)}</Text>
           </View>
           <Text style={styles.avatarNome}>{nome}</Text>
-          <Text style={styles.avatarEmail}>{email}</Text>
+          <Text style={styles.avatarEmail}>{email || 'seu@email.com'}</Text>
         </View>
 
         {/* Dados pessoais */}
@@ -85,7 +85,7 @@ export default function PerfilScreen({ navegarPara, perfil, pedidos, salvarPerfi
               value={nome}
               onChangeText={setNome}
               editable={editando}
-              placeholder="Seu nome"
+              placeholder="Cliente Brilho Natural"
             />
           </View>
 

@@ -64,11 +64,11 @@ export default function CarrinhoScreen({
 
         {/* Cupom */}
         <View style={styles.cupomContainer}>
-          <Text style={styles.cupomLabel}>Cupom de desconto</Text>
+          <Text style={styles.cupomLabel}>Cupom demonstrativo do app</Text>
           <View style={styles.cupomRow}>
             <TextInput
               style={[styles.cupomInput, cupomErro && styles.cupomInputErro, cupomAplicado && styles.cupomInputSucesso]}
-              placeholder="Ex: BRILHO10"
+              placeholder="Ex: APP10"
               placeholderTextColor="#BBB"
               value={cupom}
               onChangeText={(t) => { setCupom(t); setCupomErro(false); }}
@@ -82,7 +82,7 @@ export default function CarrinhoScreen({
               <Text style={styles.cupomBotaoTexto}>{cupomAplicado ? '✓' : 'Aplicar'}</Text>
             </TouchableOpacity>
           </View>
-          {cupomErro && <Text style={styles.cupomErro}>❌ Cupom inválido. Tente BRILHO10</Text>}
+          {cupomErro && <Text style={styles.cupomErro}>❌ Cupom inválido. Tente APP10</Text>}
           {cupomAplicado && <Text style={styles.cupomSucesso}>✅ 10% de desconto aplicado!</Text>}
         </View>
 
@@ -108,6 +108,7 @@ export default function CarrinhoScreen({
               {frete === 0 ? 'Grátis 🎉' : `R$ ${frete.toFixed(2)}`}
             </Text>
           </View>
+          <Text style={styles.freteInfo}>Frete gratuito conforme política vigente da loja.</Text>
 
           <View style={styles.divisor} />
 
@@ -115,12 +116,6 @@ export default function CarrinhoScreen({
             <Text style={styles.totalChave}>Total</Text>
             <Text style={styles.totalValor}>R$ {total.toFixed(2)}</Text>
           </View>
-
-          {subtotal < 150 && (
-            <Text style={styles.freteAviso}>
-              💡 Falta R$ {(150 - subtotal).toFixed(2)} para frete grátis!
-            </Text>
-          )}
         </View>
 
         <CustomButton titulo="Finalizar Compra" onPress={() => navegarPara('Checkout', { resumoPedido })} />

@@ -18,9 +18,9 @@ export default StyleSheet.create({
   secaoHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   secaoTitulo: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 12 },
   verTodos: { fontSize: 13, color: '#7B9E4F', fontWeight: '600' },
-  categoriasRow: { flexDirection: 'row', gap: 12 },
+  categoriasRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
   categoriaCard: {
-    flex: 1,
+    width: '30%',
     borderRadius: 14,
     padding: 16,
     alignItems: 'center',
