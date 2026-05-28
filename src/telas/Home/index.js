@@ -12,12 +12,11 @@ import styles from './styles';
 import Header from '../../componente/Header';
 import ProductCard from '../../componente/ProductCard';
 import CustomButton from '../../componente/CustomButton';
-import { PRODUTOS } from '../../dados/produtos';
 
-export default function HomeScreen({ navegarPara }) {
+export default function HomeScreen({ navegarPara, produtos = [], carregandoProdutos, erroProdutos }) {
   const [notificacoes, setNotificacoes] = useState(true);
 
-  const destaques = PRODUTOS.filter((p) => p.destaque);
+  const destaques = produtos.filter((p) => p.destaque).slice(0, 6);
 
   const categorias = [
     { nome: 'Cabelo', icone: '💆', cor: '#E8F5E9' },
@@ -72,18 +71,30 @@ export default function HomeScreen({ navegarPara }) {
               <Text style={styles.verTodos}>Ver todos →</Text>
             </TouchableOpacity>
           </View>
-          <FlatList
-            data={destaques}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <View style={{ width: 200 }}>
-                <ProductCard produto={item} navegarPara={navegarPara} />
-              </View>
-            )}
-            contentContainerStyle={{ paddingHorizontal: 4 }}
-          />
+          {erroProdutos ? <Text style={styles.avisoApi}>{erroProdutos}</Text> : null}
+          {carregandoProdutos ? (
+            <View style={styles.loadingCard}>
+              <Text style={styles.loadingTexto}>Carregando produtos em destaque...</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={destaques}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <View style={{ width: 200 }}>
+                  <ProductCard produto={item} navegarPara={navegarPara} />
+                </View>
+              )}
+              ListEmptyComponent={() => (
+                <View style={styles.loadingCard}>
+                  <Text style={styles.loadingTexto}>Nenhum produto encontrado no momento.</Text>
+                </View>
+              )}
+              contentContainerStyle={{ paddingHorizontal: 4 }}
+            />
+          )}
         </View>
 
         {/* Banner promo */}

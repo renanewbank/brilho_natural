@@ -3,13 +3,13 @@ import { View, Text, FlatList, TouchableOpacity, TextInput } from 'react-native'
 import styles from './styles';
 import Header from '../../componente/Header';
 import ProductCard from '../../componente/ProductCard';
-import { PRODUTOS, CATEGORIAS } from '../../dados/produtos';
+import { CATEGORIAS } from '../../dados/produtos';
 
-export default function ProdutosScreen({ navegarPara }) {
+export default function ProdutosScreen({ navegarPara, produtos = [], carregandoProdutos, erroProdutos }) {
   const [busca, setBusca] = useState('');
   const [categoriaAtiva, setCategoriaAtiva] = useState('Todos');
 
-  const produtosFiltrados = PRODUTOS.filter((p) => {
+  const produtosFiltrados = produtos.filter((p) => {
     const matchCategoria = categoriaAtiva === 'Todos' || p.categoria === categoriaAtiva;
     const matchBusca = p.nome.toLowerCase().includes(busca.toLowerCase());
     return matchCategoria && matchBusca;
@@ -53,6 +53,7 @@ export default function ProdutosScreen({ navegarPara }) {
 
       {/* Contagem */}
       <Text style={styles.contagem}>{produtosFiltrados.length} produto(s) encontrado(s)</Text>
+      {erroProdutos ? <Text style={styles.avisoApi}>{erroProdutos}</Text> : null}
 
       {/* Lista */}
       <FlatList
@@ -69,7 +70,9 @@ export default function ProdutosScreen({ navegarPara }) {
         ListEmptyComponent={() => (
           <View style={styles.vazio}>
             <Text style={styles.vazioEmoji}>🌿</Text>
-            <Text style={styles.vazioTexto}>Nenhum produto encontrado</Text>
+            <Text style={styles.vazioTexto}>
+              {carregandoProdutos ? 'Carregando catalogo...' : 'Nenhum produto encontrado'}
+            </Text>
           </View>
         )}
       />

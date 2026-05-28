@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,13 +11,45 @@ import CustomButton from '../../componente/CustomButton';
 import RatingStars from '../../componente/RatingStars';
 import Header from '../../componente/Header';
 import AulaSlider from '../../componente/AulaSlider';
+import { buscarProdutoPorId } from '../../services/produtosApi';
 
 export default function DetalheProdutoScreen({ produto, navegarPara, adicionarAoCarrinho }) {
   const [quantidade, setQuantidade] = useState(1);
   const [adicionado, setAdicionado] = useState(false);
   const [abaSelecionada, setAbaSelecionada] = useState('descricao');
+  const [produtoAtual, setProdutoAtual] = useState(produto);
+  const [carregandoDetalhe, setCarregandoDetalhe] = useState(false);
 
-  if (!produto) {
+  useEffect(() => {
+    setProdutoAtual(produto);
+  }, [produto]);
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarDetalhes() {
+      if (!produto?.id) return;
+
+      setCarregandoDetalhe(true);
+      const detalhe = await buscarProdutoPorId(produto.id);
+
+      if (ativo && detalhe) {
+        setProdutoAtual(detalhe);
+      }
+
+      if (ativo) {
+        setCarregandoDetalhe(false);
+      }
+    }
+
+    carregarDetalhes();
+
+    return () => {
+      ativo = false;
+    };
+  }, [produto?.id]);
+
+  if (!produtoAtual) {
     return (
       <View style={styles.semProduto}>
         <Text style={styles.semProdutoTexto}>Produto não encontrado.</Text>
@@ -28,7 +60,7 @@ export default function DetalheProdutoScreen({ produto, navegarPara, adicionarAo
 
   const handleAdicionar = () => {
     for (let i = 0; i < quantidade; i++) {
-      adicionarAoCarrinho(produto);
+      adicionarAoCarrinho(produtoAtual);
     }
     setAdicionado(true);
     setTimeout(() => setAdicionado(false), 2500);
@@ -49,22 +81,24 @@ export default function DetalheProdutoScreen({ produto, navegarPara, adicionarAo
       />
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Image source={{ uri: produto.imagem }} style={styles.imagem} resizeMode="cover" />
+        <Image source={{ uri: produtoAtual.imagem }} style={styles.imagem} resizeMode="cover" />
 
         <View style={styles.conteudo}>
           <View style={styles.categoriaRow}>
-            <Text style={styles.categoria}>{produto.categoria}</Text>
-            <Text style={styles.volume}>📦 {produto.volume}</Text>
+            <Text style={styles.categoria}>{produtoAtual.categoria}</Text>
+            <Text style={styles.volume}>📦 {produtoAtual.volume}</Text>
           </View>
 
-          <Text style={styles.nome}>{produto.nome}</Text>
+          <Text style={styles.nome}>{produtoAtual.nome}</Text>
 
           <View style={styles.ratingRow}>
-            <RatingStars nota={produto.nota} />
-            <Text style={styles.avaliadores}>{produto.avaliadores} avaliações</Text>
+            <RatingStars nota={produtoAtual.nota} />
+            <Text style={styles.avaliadores}>{produtoAtual.avaliadores} avaliações</Text>
           </View>
 
-          <Text style={styles.preco}>R$ {produto.preco.toFixed(2)}</Text>
+          {carregandoDetalhe ? <Text style={styles.avisoApi}>Atualizando detalhes do produto...</Text> : null}
+
+          <Text style={styles.preco}>R$ {produtoAtual.preco.toFixed(2)}</Text>
 
           {/* Slider de quantidade */}
           <View style={styles.quantidadeContainer}>
@@ -102,7 +136,7 @@ export default function DetalheProdutoScreen({ produto, navegarPara, adicionarAo
           </View>
 
           <Text style={styles.textoConteudo}>
-            {abaSelecionada === 'descricao' ? produto.descricao : produto.ingredientes}
+            {abaSelecionada === 'descricao' ? produtoAtual.descricao : produtoAtual.ingredientes}
           </Text>
 
           {/* Selos */}
@@ -121,7 +155,7 @@ export default function DetalheProdutoScreen({ produto, navegarPara, adicionarAo
           )}
 
           <CustomButton
-            titulo={adicionado ? '✓ Adicionado!' : `Adicionar ao Carrinho · R$ ${(produto.preco * quantidade).toFixed(2)}`}
+            titulo={adicionado ? '✓ Adicionado!' : `Adicionar ao Carrinho · R$ ${(produtoAtual.preco * quantidade).toFixed(2)}`}
             onPress={handleAdicionar}
             desabilitado={adicionado}
           />

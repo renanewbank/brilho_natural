@@ -71,4 +71,5 @@ export default StyleSheet.create({
   pedidoRodape: { flexDirection: 'row', justifyContent: 'space-between' },
   pedidoData: { fontSize: 12, color: '#999' },
   pedidoTotal: { fontSize: 13, fontWeight: 'bold', color: '#7B9E4F' },
+  semPedidos: { fontSize: 13, color: '#888' },
 });

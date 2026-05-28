@@ -43,6 +43,22 @@ export default StyleSheet.create({
   promoEmoji: { fontSize: 32 },
   promoTitulo: { fontSize: 16, fontWeight: 'bold', color: '#4A7A28' },
   promoSubtitulo: { fontSize: 12, color: '#6A8A48', marginTop: 2 },
+  avisoApi: {
+    fontSize: 12,
+    color: '#7B9E4F',
+    backgroundColor: '#F0F7E6',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  loadingCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 12,
+    padding: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingTexto: { fontSize: 14, color: '#777' },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
