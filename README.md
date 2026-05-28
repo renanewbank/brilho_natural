@@ -1,5 +1,3 @@
-Brilho Natural
-=======
 # Brilho Natural
 
 Aplicacao web adaptada para rodar com `npm run dev`, sem Expo e sem Snack.
