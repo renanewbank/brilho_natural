@@ -12,23 +12,25 @@ import Header from '../../componente/Header';
 import CartItem from '../../componente/CartItem';
 import CustomButton from '../../componente/CustomButton';
 
-export default function CarrinhoScreen({ carrinho, navegarPara, removerDoCarrinho }) {
-  const [cupom, setCupom] = useState('');
-  const [cupomAplicado, setCupomAplicado] = useState(false);
+export default function CarrinhoScreen({
+  carrinho,
+  navegarPara,
+  removerDoCarrinho,
+  cupom,
+  cupomAplicado,
+  setCupom,
+  aplicarCupom,
+  resumoPedido,
+}) {
   const [cupomErro, setCupomErro] = useState(false);
 
-  const subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
-  const desconto = cupomAplicado ? subtotal * 0.1 : 0;
-  const frete = subtotal >= 150 ? 0 : 12.9;
-  const total = subtotal - desconto + frete;
+  const { subtotal, desconto, frete, total } = resumoPedido;
 
-  const aplicarCupom = () => {
-    if (cupom.trim().toUpperCase() === 'BRILHO10') {
-      setCupomAplicado(true);
+  const handleAplicarCupom = () => {
+    const sucesso = aplicarCupom();
+    setCupomErro(!sucesso);
+    if (sucesso) {
       setCupomErro(false);
-    } else {
-      setCupomErro(true);
-      setCupomAplicado(false);
     }
   };
 
@@ -74,7 +76,7 @@ export default function CarrinhoScreen({ carrinho, navegarPara, removerDoCarrinh
             />
             <TouchableOpacity
               style={[styles.cupomBotao, cupomAplicado && styles.cupomBotaoSucesso]}
-              onPress={aplicarCupom}
+              onPress={handleAplicarCupom}
               disabled={cupomAplicado}
             >
               <Text style={styles.cupomBotaoTexto}>{cupomAplicado ? '✓' : 'Aplicar'}</Text>
@@ -121,7 +123,7 @@ export default function CarrinhoScreen({ carrinho, navegarPara, removerDoCarrinh
           )}
         </View>
 
-        <CustomButton titulo="Finalizar Compra" onPress={() => navegarPara('Home')} />
+        <CustomButton titulo="Finalizar Compra" onPress={() => navegarPara('Checkout', { resumoPedido })} />
         <CustomButton titulo="Continuar Comprando" variante="secundario" onPress={() => navegarPara('Produtos')} />
 
         <View style={{ height: 20 }} />

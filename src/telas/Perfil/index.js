@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,32 +11,46 @@ import styles from './styles';
 import Header from '../../componente/Header';
 import CustomButton from '../../componente/CustomButton';
 
-export default function PerfilScreen({ navegarPara }) {
-  const [nome, setNome] = useState('Maria Silva');
-  const [email, setEmail] = useState('maria@email.com');
-  const [telefone, setTelefone] = useState('(13) 99999-0000');
+export default function PerfilScreen({ navegarPara, perfil, pedidos, salvarPerfil }) {
+  const [nome, setNome] = useState(perfil?.nome || 'Maria Silva');
+  const [email, setEmail] = useState(perfil?.email || 'maria@email.com');
+  const [telefone, setTelefone] = useState(perfil?.telefone || '(13) 99999-0000');
   const [editando, setEditando] = useState(false);
-  const [notifPromo, setNotifPromo] = useState(true);
-  const [notifPedido, setNotifPedido] = useState(true);
-  const [temaEscuro, setTemaEscuro] = useState(false);
+  const [notifPromo, setNotifPromo] = useState(perfil?.notifPromo ?? true);
+  const [notifPedido, setNotifPedido] = useState(perfil?.notifPedido ?? true);
+  const [temaEscuro, setTemaEscuro] = useState(perfil?.temaEscuro ?? false);
   const [salvando, setSalvando] = useState(false);
 
-  const salvar = () => {
-    setSalvando(true);
-    setTimeout(() => {
-      setSalvando(false);
-      setEditando(false);
-    }, 1500);
-  };
+  useEffect(() => {
+    if (!perfil) return;
 
-  const pedidos = [
-    { id: '#4821', data: '05/04/2025', status: 'Entregue', total: 'R$ 89,90' },
-    { id: '#4612', data: '18/03/2025', status: 'Em trânsito', total: 'R$ 154,80' },
-    { id: '#4391', data: '02/02/2025', status: 'Entregue', total: 'R$ 64,90' },
-  ];
+    setNome(perfil.nome || '');
+    setEmail(perfil.email || '');
+    setTelefone(perfil.telefone || '');
+    setNotifPromo(perfil.notifPromo ?? true);
+    setNotifPedido(perfil.notifPedido ?? true);
+    setTemaEscuro(perfil.temaEscuro ?? false);
+  }, [perfil]);
+
+  const salvar = async () => {
+    setSalvando(true);
+
+    await salvarPerfil({
+      nome,
+      email,
+      telefone,
+      notifPromo,
+      notifPedido,
+      temaEscuro,
+    });
+
+    setSalvando(false);
+    setEditando(false);
+  };
 
   const corStatus = (s) => {
     if (s === 'Entregue') return '#4CAF50';
+    if (s === 'Recebido') return '#2196F3';
     if (s === 'Em trânsito') return '#FF9800';
     return '#2196F3';
   };
@@ -132,20 +146,24 @@ export default function PerfilScreen({ navegarPara }) {
         {/* Histórico de pedidos */}
         <View style={styles.secao}>
           <Text style={styles.secaoTitulo}>Histórico de Pedidos</Text>
-          {pedidos.map((p) => (
-            <View key={p.id} style={styles.pedidoCard}>
-              <View style={styles.pedidoHeader}>
-                <Text style={styles.pedidoId}>{p.id}</Text>
-                <View style={[styles.pedidoStatus, { backgroundColor: corStatus(p.status) + '22' }]}>
-                  <Text style={[styles.pedidoStatusTexto, { color: corStatus(p.status) }]}>{p.status}</Text>
+          {pedidos.length === 0 ? (
+            <Text style={styles.semPedidos}>Nenhum pedido salvo ainda.</Text>
+          ) : (
+            pedidos.map((p) => (
+              <View key={p.id} style={styles.pedidoCard}>
+                <View style={styles.pedidoHeader}>
+                  <Text style={styles.pedidoId}>{p.id}</Text>
+                  <View style={[styles.pedidoStatus, { backgroundColor: corStatus(p.status) + '22' }]}>
+                    <Text style={[styles.pedidoStatusTexto, { color: corStatus(p.status) }]}>{p.status}</Text>
+                  </View>
+                </View>
+                <View style={styles.pedidoRodape}>
+                  <Text style={styles.pedidoData}>{p.data}</Text>
+                  <Text style={styles.pedidoTotal}>R$ {Number(p.total).toFixed(2)}</Text>
                 </View>
               </View>
-              <View style={styles.pedidoRodape}>
-                <Text style={styles.pedidoData}>{p.data}</Text>
-                <Text style={styles.pedidoTotal}>{p.total}</Text>
-              </View>
-            </View>
-          ))}
+            ))
+          )}
         </View>
 
         <CustomButton titulo="Sair da Conta" variante="perigo" onPress={() => {}} />

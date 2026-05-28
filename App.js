@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Platform } from 'react-native';
 
 import HomeScreen from './src/telas/Home/index';
@@ -8,16 +8,115 @@ import CarrinhoScreen from './src/telas/Carrinhos/index';
 import PerfilScreen from './src/telas/Perfil/index';
 import ContatoScreen from './src/telas/Contato/index';
 import SobreScreen from './src/telas/Sobre/index';
+import CheckoutScreen from './src/telas/Checkout/index';
+import { buscarProdutos } from './src/services/produtosApi';
+import { carregarCarrinho, salvarCarrinho } from './src/storage/cartStorage';
+import { adicionarPedido, carregarPedidos } from './src/storage/orderStorage';
+import { carregarPerfil, salvarPerfil } from './src/storage/profileStorage';
+import { carregarEndereco, salvarEndereco } from './src/storage/addressStorage';
 
 export default function App() {
   const [telaAtual, setTelaAtual] = useState('Home');
-  const [produtoSelecionado, setProdutoSelecionado] = useState(null);
+  const [paramsTela, setParamsTela] = useState(null);
+  const [produtos, setProdutos] = useState([]);
+  const [carregandoProdutos, setCarregandoProdutos] = useState(true);
+  const [erroProdutos, setErroProdutos] = useState('');
   const [carrinho, setCarrinho] = useState([]);
+  const [cupom, setCupom] = useState('');
+  const [cupomAplicado, setCupomAplicado] = useState(false);
+  const [pedidos, setPedidos] = useState([]);
+  const [perfil, setPerfil] = useState(null);
+  const [ultimoEndereco, setUltimoEndereco] = useState(null);
+  const [storagePronto, setStoragePronto] = useState(false);
 
   const navegarPara = (tela, params = null) => {
-    if (params) setProdutoSelecionado(params);
+    setParamsTela(params);
     setTelaAtual(tela);
   };
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarDadosIniciais() {
+      const [dadosCarrinho, pedidosSalvos, perfilSalvo, enderecoSalvo] = await Promise.all([
+        carregarCarrinho(),
+        carregarPedidos(),
+        carregarPerfil(),
+        carregarEndereco(),
+      ]);
+
+      if (!ativo) return;
+
+      setCarrinho(dadosCarrinho.itens || []);
+      setCupom(dadosCarrinho.cupom || '');
+      setCupomAplicado(Boolean(dadosCarrinho.cupomAplicado));
+      setPedidos(pedidosSalvos);
+      setPerfil(perfilSalvo);
+      setUltimoEndereco(enderecoSalvo);
+      setStoragePronto(true);
+    }
+
+    carregarDadosIniciais();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarCatalogo() {
+      setCarregandoProdutos(true);
+      const resposta = await buscarProdutos();
+
+      if (!ativo) return;
+
+      setProdutos(resposta.produtos);
+      setErroProdutos(resposta.mensagem);
+      setCarregandoProdutos(false);
+    }
+
+    carregarCatalogo();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!storagePronto) return;
+
+    salvarCarrinho({
+      itens: carrinho,
+      cupom,
+      cupomAplicado,
+    });
+  }, [carrinho, cupom, cupomAplicado, storagePronto]);
+
+  useEffect(() => {
+    if (!storagePronto || !perfil) return;
+    salvarPerfil(perfil);
+  }, [perfil, storagePronto]);
+
+  useEffect(() => {
+    if (!produtos.length) return;
+
+    setCarrinho((prev) =>
+      prev.map((item) => {
+        const produtoAtualizado = produtos.find((produto) => produto.id === item.id);
+
+        if (!produtoAtualizado) {
+          return item;
+        }
+
+        return {
+          ...produtoAtualizado,
+          quantidade: item.quantidade,
+        };
+      })
+    );
+  }, [produtos]);
 
   const adicionarAoCarrinho = (produto) => {
     setCarrinho((prev) => {
@@ -35,16 +134,88 @@ export default function App() {
     setCarrinho((prev) => prev.filter((p) => p.id !== id));
   };
 
+  const aplicarCupom = () => {
+    if (cupom.trim().toUpperCase() === 'BRILHO10') {
+      setCupom('BRILHO10');
+      setCupomAplicado(true);
+      return true;
+    }
+
+    setCupomAplicado(false);
+    return false;
+  };
+
+  const limparCarrinhoECupom = () => {
+    setCarrinho([]);
+    setCupom('');
+    setCupomAplicado(false);
+  };
+
+  const resumoPedido = useMemo(() => {
+    const subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+    const desconto = cupomAplicado ? subtotal * 0.1 : 0;
+    const frete = subtotal >= 150 ? 0 : 12.9;
+    const total = subtotal - desconto + frete;
+
+    return {
+      subtotal,
+      desconto,
+      frete,
+      total,
+    };
+  }, [carrinho, cupomAplicado]);
+
+  const confirmarPedido = async ({ endereco, resumo, itens }) => {
+    const pedido = {
+      id: `#${String(Date.now()).slice(-6)}`,
+      data: new Date().toLocaleDateString('pt-BR'),
+      status: 'Recebido',
+      total: resumo.total,
+      subtotal: resumo.subtotal,
+      desconto: resumo.desconto,
+      frete: resumo.frete,
+      itens,
+      endereco,
+    };
+
+    const proximosPedidos = await adicionarPedido(pedido);
+    await salvarEndereco(endereco);
+
+    setPedidos(proximosPedidos);
+    setUltimoEndereco(endereco);
+    limparCarrinhoECupom();
+
+    return pedido;
+  };
+
+  const salvarDadosPerfil = async (dadosPerfil) => {
+    setPerfil(dadosPerfil);
+  };
+
   const renderTela = () => {
     switch (telaAtual) {
       case 'Home':
-        return <HomeScreen navegarPara={navegarPara} />;
+        return (
+          <HomeScreen
+            navegarPara={navegarPara}
+            produtos={produtos}
+            carregandoProdutos={carregandoProdutos}
+            erroProdutos={erroProdutos}
+          />
+        );
       case 'Produtos':
-        return <ProdutosScreen navegarPara={navegarPara} />;
+        return (
+          <ProdutosScreen
+            navegarPara={navegarPara}
+            produtos={produtos}
+            carregandoProdutos={carregandoProdutos}
+            erroProdutos={erroProdutos}
+          />
+        );
       case 'DetalheProduto':
         return (
           <DetalheProdutoScreen
-            produto={produtoSelecionado}
+            produto={paramsTela}
             navegarPara={navegarPara}
             adicionarAoCarrinho={adicionarAoCarrinho}
           />
@@ -55,16 +226,48 @@ export default function App() {
             carrinho={carrinho}
             navegarPara={navegarPara}
             removerDoCarrinho={removerDoCarrinho}
+            cupom={cupom}
+            cupomAplicado={cupomAplicado}
+            setCupom={setCupom}
+            aplicarCupom={aplicarCupom}
+            resumoPedido={resumoPedido}
           />
         );
       case 'Perfil':
-        return <PerfilScreen navegarPara={navegarPara} />;
+        return (
+          <PerfilScreen
+            navegarPara={navegarPara}
+            perfil={perfil}
+            pedidos={pedidos}
+            salvarPerfil={salvarDadosPerfil}
+          />
+        );
       case 'Contato':
         return <ContatoScreen navegarPara={navegarPara} />;
       case 'Sobre':
         return <SobreScreen navegarPara={navegarPara} />;
+      case 'Checkout':
+        return (
+          <CheckoutScreen
+            navegarPara={navegarPara}
+            carrinho={carrinho}
+            cupom={cupom}
+            cupomAplicado={cupomAplicado}
+            perfil={perfil}
+            ultimoEndereco={ultimoEndereco}
+            confirmarPedido={confirmarPedido}
+            {...resumoPedido}
+          />
+        );
       default:
-        return <HomeScreen navegarPara={navegarPara} />;
+        return (
+          <HomeScreen
+            navegarPara={navegarPara}
+            produtos={produtos}
+            carregandoProdutos={carregandoProdutos}
+            erroProdutos={erroProdutos}
+          />
+        );
     }
   };
 
@@ -106,7 +309,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFAF7' },
   conteudo: {
     flex: 1,
-    paddingBottom: 72,
+    paddingBottom: 76,
   },
   tabBar: {
     position: 'fixed',
