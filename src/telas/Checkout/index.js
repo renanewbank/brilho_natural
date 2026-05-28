@@ -73,19 +73,19 @@ export default function CheckoutScreen({
     const cepLimpo = formulario.cep.replace(/\D/g, '');
 
     if (carrinho.length === 0) {
-      return 'Seu carrinho esta vazio.';
+      return 'Seu carrinho está vazio.';
     }
 
     if (cepLimpo.length !== 8) {
-      return 'Informe um CEP valido antes de confirmar o pedido.';
+      return 'Informe um CEP válido antes de confirmar o pedido.';
     }
 
     if (!formulario.destinatario.trim()) {
-      return 'Informe o nome do destinatario.';
+      return 'Informe o nome do destinatário.';
     }
 
     if (!formulario.numero.trim()) {
-      return 'Informe o numero do endereco.';
+      return 'Informe o número do endereço.';
     }
 
     return '';
@@ -129,7 +129,7 @@ export default function CheckoutScreen({
           <Text style={styles.sucessoEmoji}>🎉</Text>
           <Text style={styles.sucessoTitulo}>Pedido confirmado!</Text>
           <Text style={styles.sucessoTexto}>
-            Pedido {pedidoConfirmado.id} salvo com sucesso no seu historico.
+            Pedido {pedidoConfirmado.id} salvo com sucesso no seu histórico.
           </Text>
           <Text style={styles.sucessoResumo}>Total pago: R$ {pedidoConfirmado.total.toFixed(2)}</Text>
           <CustomButton titulo="Ver Meu Perfil" onPress={() => navegarPara('Perfil')} />
@@ -174,8 +174,9 @@ export default function CheckoutScreen({
           )}
           <View style={styles.linhaResumo}>
             <Text style={styles.chaveResumo}>Frete</Text>
-            <Text style={styles.valorResumo}>{frete === 0 ? 'Gratis' : `R$ ${frete.toFixed(2)}`}</Text>
+            <Text style={styles.valorResumo}>{frete === 0 ? 'Grátis' : `R$ ${frete.toFixed(2)}`}</Text>
           </View>
+          <Text style={styles.freteInfo}>Frete gratuito conforme política vigente da loja.</Text>
           <View style={styles.divisor} />
           <View style={styles.linhaResumo}>
             <Text style={styles.totalChave}>Total</Text>
@@ -220,7 +221,7 @@ export default function CheckoutScreen({
 
           <View style={styles.linhaCampos}>
             <View style={styles.campoUf}>
-              <Text style={styles.campoLabel}>Numero</Text>
+              <Text style={styles.campoLabel}>Número</Text>
               <TextInput style={styles.input} value={formulario.numero} onChangeText={(texto) => atualizarCampo('numero', texto)} />
             </View>
             <View style={styles.campoFlex}>
@@ -229,7 +230,7 @@ export default function CheckoutScreen({
             </View>
           </View>
 
-          <Text style={styles.campoLabel}>Destinatario</Text>
+          <Text style={styles.campoLabel}>Destinatário</Text>
           <TextInput style={styles.input} value={formulario.destinatario} onChangeText={(texto) => atualizarCampo('destinatario', texto)} />
 
           <Text style={styles.campoLabel}>Telefone</Text>

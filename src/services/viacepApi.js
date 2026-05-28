@@ -2,20 +2,20 @@ export async function buscarEnderecoPorCep(cep) {
   const cepLimpo = String(cep || '').replace(/\D/g, '');
 
   if (cepLimpo.length !== 8) {
-    throw new Error('Digite um CEP valido com 8 numeros.');
+    throw new Error('Digite um CEP válido com 8 números.');
   }
 
   try {
     const resposta = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
 
     if (!resposta.ok) {
-      throw new Error('Nao foi possivel consultar o CEP agora.');
+      throw new Error('Não foi possível consultar o CEP agora.');
     }
 
     const dados = await resposta.json();
 
     if (dados.erro) {
-      throw new Error('CEP nao encontrado.');
+      throw new Error('CEP não encontrado.');
     }
 
     return {
@@ -28,12 +28,12 @@ export async function buscarEnderecoPorCep(cep) {
     };
   } catch (error) {
     if (
-      error.message === 'Digite um CEP valido com 8 numeros.' ||
-      error.message === 'CEP nao encontrado.'
+      error.message === 'Digite um CEP válido com 8 números.' ||
+      error.message === 'CEP não encontrado.'
     ) {
       throw error;
     }
 
-    throw new Error('Nao foi possivel consultar o CEP agora.');
+    throw new Error('Não foi possível consultar o CEP agora.');
   }
 }

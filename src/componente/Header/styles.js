@@ -1,6 +1,6 @@
 import { StyleSheet, Platform, StatusBar } from 'react-native';
 
-const topoAndroid = Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 8 : 50;
+const topoHeader = Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 8 : 18;
 
 export default StyleSheet.create({
   container: {
@@ -8,8 +8,9 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#7B9E4F',
-    paddingTop: topoAndroid,
-    paddingBottom: 14,
+    minHeight: 94,
+    paddingTop: topoHeader,
+    paddingBottom: 12,
     paddingHorizontal: 16,
   },
   botaoVoltar: { padding: 6 },

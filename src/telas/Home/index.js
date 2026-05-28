@@ -20,8 +20,10 @@ export default function HomeScreen({ navegarPara, produtos = [], carregandoProdu
 
   const categorias = [
     { nome: 'Cabelo', icone: '💆', cor: '#E8F5E9' },
-    { nome: 'Rosto', icone: '✨', cor: '#FFF3E0' },
-    { nome: 'Corpo', icone: '🌿', cor: '#E3F2FD' },
+    { nome: 'Corpo', icone: '🧴', cor: '#FFF3E0' },
+    { nome: 'Perfumes', icone: '🌸', cor: '#FCE4EC' },
+    { nome: 'Rosto', icone: '✨', cor: '#E3F2FD' },
+    { nome: 'Mãos & Pés', icone: '🫶', cor: '#F3E5F5' },
   ];
 
   return (
@@ -37,8 +39,8 @@ export default function HomeScreen({ navegarPara, produtos = [], carregandoProdu
             resizeMode="cover"
           />
           <View style={styles.bannerOverlay}>
-            <Text style={styles.bannerTag}>🌱 100% Natural</Text>
-            <Text style={styles.bannerTitulo}>Cuide-se com{'\n'}o que a natureza{'\n'}oferece</Text>
+            <Text style={styles.bannerTag}>Beleza e bem-estar</Text>
+            <Text style={styles.bannerTitulo}>Realce seu{'\n'}brilho natural</Text>
             <CustomButton
               titulo="Ver Coleção"
               onPress={() => navegarPara('Produtos')}
@@ -99,10 +101,10 @@ export default function HomeScreen({ navegarPara, produtos = [], carregandoProdu
 
         {/* Banner promo */}
         <View style={styles.promoBanner}>
-          <Text style={styles.promoEmoji}>🌿</Text>
+          <Text style={styles.promoEmoji}>🚚</Text>
           <View style={{ flex: 1 }}>
-            <Text style={styles.promoTitulo}>Frete grátis</Text>
-            <Text style={styles.promoSubtitulo}>Nas compras acima de R$ 150</Text>
+            <Text style={styles.promoTitulo}>Frete gratuito</Text>
+            <Text style={styles.promoSubtitulo}>Conforme política vigente da loja</Text>
           </View>
         </View>
 

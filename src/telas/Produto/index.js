@@ -71,7 +71,7 @@ export default function ProdutosScreen({ navegarPara, produtos = [], carregandoP
           <View style={styles.vazio}>
             <Text style={styles.vazioEmoji}>🌿</Text>
             <Text style={styles.vazioTexto}>
-              {carregandoProdutos ? 'Carregando catalogo...' : 'Nenhum produto encontrado'}
+              {carregandoProdutos ? 'Carregando catálogo...' : 'Nenhum produto encontrado'}
             </Text>
           </View>
         )}
