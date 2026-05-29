@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,38 +10,68 @@ import styles from './styles';
 import Header from '../../components/Header';
 import CustomButton from '../../components/CustomButton';
 import AulaSlider from '../../components/AulaSlider';
+import {
+  buscarCategoriasAtendidas,
+  buscarDiferenciaisEmpresa,
+  buscarInformacoesEmpresa,
+} from '../../services/empresaApi';
 
-const TIMELINE = [
-  { ano: '2015', evento: 'Início da Brilho Natural Shop em Santos, SP.' },
-  { ano: '2016+', evento: 'Fortalecimento do atendimento personalizado e do relacionamento com clientes.' },
-  { ano: 'Atual', evento: 'Expansão da experiência da loja para o ambiente digital.' },
-];
-
-const VALORES = [
-  { icone: '✨', titulo: 'Qualidade', desc: 'Seleção de produtos de beleza e bem-estar para diferentes rotinas de cuidado.' },
-  { icone: '🛍️', titulo: 'Diversidade', desc: 'Catálogo multimarca com cosméticos nacionais e importados.' },
-  { icone: '💬', titulo: 'Atendimento', desc: 'Relacionamento próximo e suporte aos clientes antes e depois da compra.' },
-  { icone: '🤝', titulo: 'Confiança', desc: 'Experiência construída com proximidade, cuidado e respeito ao cliente.' },
-];
+const TEXTO_INSTITUCIONAL =
+  'A Brilho Natural reúne produtos de beleza e cosméticos para diferentes rotinas de cuidado pessoal. A proposta da loja é oferecer variedade, atendimento próximo e uma experiência simples para quem busca produtos para cabelo, rosto, corpo, mãos e pés.';
 
 export default function SobreScreen({ navegarPara }) {
   const [satisfacao, setSatisfacao] = useState(5);
-  const [abaAtiva, setAbaAtiva] = useState('missao');
+  const [abaAtiva, setAbaAtiva] = useState('visao');
+  const [empresa, setEmpresa] = useState(null);
+  const [categorias, setCategorias] = useState([]);
+  const [diferenciais, setDiferenciais] = useState([]);
+  const [carregando, setCarregando] = useState(true);
 
   const abas = [
-    { id: 'missao', label: 'Missão' },
-    { id: 'historia', label: 'História' },
-    { id: 'valores', label: 'Valores' },
+    { id: 'visao', label: 'Visão' },
+    { id: 'categorias', label: 'Categorias' },
+    { id: 'diferenciais', label: 'Diferenciais' },
   ];
 
-  const textoMissao = 'A Brilho Natural Shop nasceu em Santos, no litoral de São Paulo, com o objetivo de oferecer produtos e soluções de beleza e bem-estar feminino. A loja trabalha com cosméticos multimarca, buscando unir qualidade, diversidade de produtos e atendimento próximo aos clientes.\n\nCom a presença digital, a Brilho Natural amplia essa experiência para o ambiente online, mantendo o foco em cuidado, confiança e relacionamento com o público.';
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarDados() {
+      setCarregando(true);
+
+      try {
+        const [empresaResponse, categoriasResponse, diferenciaisResponse] = await Promise.all([
+          buscarInformacoesEmpresa(),
+          buscarCategoriasAtendidas(),
+          buscarDiferenciaisEmpresa(),
+        ]);
+
+        if (!ativo) return;
+
+        setEmpresa(empresaResponse);
+        setCategorias(categoriasResponse);
+        setDiferenciais(diferenciaisResponse);
+      } finally {
+        if (ativo) {
+          setCarregando(false);
+        }
+      }
+    }
+
+    carregarDados();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  const nomeEmpresa = empresa?.nome || 'Brilho Natural';
+  const cidadeEstado = empresa ? `${empresa.cidade}/${empresa.estado}` : 'Santos/SP';
 
   return (
     <View style={styles.container}>
       <Header titulo="Sobre Nós" navegarPara={navegarPara} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-
-        {/* Hero */}
         <View style={styles.hero}>
           <Image
             source={{ uri: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=800' }}
@@ -50,81 +80,97 @@ export default function SobreScreen({ navegarPara }) {
           />
           <View style={styles.heroOverlay}>
             <Text style={styles.heroTag}>Beleza e bem-estar</Text>
-            <Text style={styles.heroLogo}>Brilho Natural</Text>
-            <Text style={styles.heroSlogan}>Produtos de beleza para realçar seu brilho natural</Text>
+            <Text style={styles.heroLogo}>{nomeEmpresa}</Text>
+            <Text style={styles.heroSlogan}>
+              Loja de cosméticos e produtos de beleza com variedade, atendimento e bem-estar.
+            </Text>
           </View>
         </View>
 
         <View style={styles.statsRow}>
           {[
-            { numero: 'Santos/SP', label: 'Origem' },
+            { numero: cidadeEstado, label: 'Localização' },
+            { numero: empresa?.segmento || 'Cosméticos', label: 'Segmento' },
             { numero: 'Multimarcas', label: 'Catálogo' },
             { numero: 'Atendimento', label: 'Foco' },
-            { numero: 'Online', label: 'Experiência' },
-          ].map((s) => (
-            <View key={s.label} style={styles.statCard}>
-              <Text style={styles.statNumero}>{s.numero}</Text>
-              <Text style={styles.statLabel}>{s.label}</Text>
+          ].map((item) => (
+            <View key={item.label} style={styles.statCard}>
+              <Text style={styles.statNumero}>{item.numero}</Text>
+              <Text style={styles.statLabel}>{item.label}</Text>
             </View>
           ))}
         </View>
 
         <View style={styles.abasContainer}>
-          {abas.map((a) => (
+          {abas.map((aba) => (
             <TouchableOpacity
-              key={a.id}
-              style={[styles.aba, abaAtiva === a.id && styles.abaAtiva]}
-              onPress={() => setAbaAtiva(a.id)}
+              key={aba.id}
+              style={[styles.aba, abaAtiva === aba.id && styles.abaAtiva]}
+              onPress={() => setAbaAtiva(aba.id)}
             >
-              <Text style={[styles.abaTexto, abaAtiva === a.id && styles.abaTextoAtivo]}>
-                {a.label}
+              <Text style={[styles.abaTexto, abaAtiva === aba.id && styles.abaTextoAtivo]}>
+                {aba.label}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {abaAtiva === 'missao' && (
+        {carregando ? (
           <View style={styles.secao}>
-            <Text style={styles.textoMissao}>{textoMissao}</Text>
+            <Text style={styles.textoMissao}>Carregando informações da loja...</Text>
           </View>
-        )}
+        ) : null}
 
-        {abaAtiva === 'historia' && (
+        {!carregando && abaAtiva === 'visao' ? (
           <View style={styles.secao}>
-            {TIMELINE.map((item, index) => (
-              <View key={item.ano} style={styles.timelineItem}>
-                <View style={styles.timelineLinha}>
-                  <View style={styles.timelinePonto} />
-                  {index < TIMELINE.length - 1 && <View style={styles.timelineConector} />}
-                </View>
-                <View style={styles.timelineConteudo}>
-                  <Text style={styles.timelineAno}>{item.ano}</Text>
-                  <Text style={styles.timelineEvento}>{item.evento}</Text>
-                </View>
-              </View>
-            ))}
+            <Text style={styles.localizacaoTitulo}>{empresa?.nome}</Text>
+            <Text style={styles.textoMissao}>{empresa?.descricao}</Text>
+            <Text style={styles.localizacaoAjuda}>{TEXTO_INSTITUCIONAL}</Text>
+            <View style={styles.localizacaoBox}>
+              <Text style={styles.localizacaoLinha}>Segmento: {empresa?.segmento}</Text>
+              <Text style={styles.localizacaoLinha}>Cidade: {empresa?.cidade} - {empresa?.estado}</Text>
+              <Text style={styles.localizacaoLinha}>E-mail: {empresa?.email}</Text>
+              <Text style={styles.localizacaoLinha}>
+                Atendimento: {empresa?.horarioAtendimento}
+              </Text>
+            </View>
           </View>
-        )}
+        ) : null}
 
-        {abaAtiva === 'valores' && (
+        {!carregando && abaAtiva === 'categorias' ? (
           <View style={styles.secao}>
-            {VALORES.map((v) => (
-              <View key={v.titulo} style={styles.valorCard}>
-                <Text style={styles.valorIcone}>{v.icone}</Text>
+            {categorias.map((categoria) => (
+              <View key={categoria} style={styles.valorCard}>
+                <Text style={styles.valorIcone}>🌿</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.valorTitulo}>{v.titulo}</Text>
-                  <Text style={styles.valorDesc}>{v.desc}</Text>
+                  <Text style={styles.valorTitulo}>{categoria}</Text>
+                  <Text style={styles.valorDesc}>
+                    Categoria atendida pela loja dentro da proposta de beleza e cuidado pessoal.
+                  </Text>
                 </View>
               </View>
             ))}
           </View>
-        )}
+        ) : null}
+
+        {!carregando && abaAtiva === 'diferenciais' ? (
+          <View style={styles.secao}>
+            {diferenciais.map((diferencial) => (
+              <View key={diferencial} style={styles.valorCard}>
+                <Text style={styles.valorIcone}>✨</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.valorTitulo}>{diferencial}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        ) : null}
 
         <View style={styles.avaliacaoContainer}>
           <Text style={styles.avaliacaoTitulo}>Como você avalia nossa loja?</Text>
           <Text style={styles.avaliacaoValor}>
-            {'★'.repeat(Math.round(satisfacao))}{'☆'.repeat(5 - Math.round(satisfacao))}
-            {' '}{satisfacao.toFixed(1)}
+            {'★'.repeat(Math.round(satisfacao))}
+            {'☆'.repeat(5 - Math.round(satisfacao))} {satisfacao.toFixed(1)}
           </Text>
           <AulaSlider
             style={styles.slider}
@@ -146,7 +192,7 @@ export default function SobreScreen({ navegarPara }) {
         <CustomButton titulo="Ver Produtos" onPress={() => navegarPara('Produtos')} />
         <CustomButton titulo="Fale Conosco" variante="secundario" onPress={() => navegarPara('Contato')} />
 
-        <Text style={styles.rodape}>© 2025 Brilho Natural · Santos, SP</Text>
+        <Text style={styles.rodape}>{nomeEmpresa} · {cidadeEstado}</Text>
         <View style={{ height: 20 }} />
       </ScrollView>
     </View>
