@@ -1,76 +1,160 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TextInput,
+  TouchableOpacity,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import styles from './styles';
 import Header from '../../components/Header';
 import CustomButton from '../../components/CustomButton';
+import { buscarInformacoesEmpresa } from '../../services/empresaApi';
+import {
+  buscarAssuntosContato,
+  buscarCanaisAtendimento,
+  buscarFaqAtendimento,
+  enviarMensagemContato,
+} from '../../services/atendimentoApi';
 
 export default function ContatoScreen({ navegarPara }) {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
-  const [assunto, setAssunto] = useState('duvida');
+  const [assunto, setAssunto] = useState('');
   const [mensagem, setMensagem] = useState('');
-  const [enviado, setEnviado] = useState(false);
+  const [empresa, setEmpresa] = useState(null);
+  const [canais, setCanais] = useState([]);
+  const [assuntos, setAssuntos] = useState([]);
+  const [faq, setFaq] = useState([]);
+  const [carregando, setCarregando] = useState(true);
   const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState('');
+  const [sucesso, setSucesso] = useState('');
+  const [protocolo, setProtocolo] = useState('');
+  const [assuntoAberto, setAssuntoAberto] = useState(false);
 
-  const canais = [
-    { icone: '📧', titulo: 'E-mail', valor: 'suporte@brilhonatural.shop', cor: '#E3F2FD' },
-    { icone: '📱', titulo: 'WhatsApp', valor: '(13) 99125-8662', cor: '#E8F5E9' },
-    { icone: '☎️', titulo: 'Telefone', valor: '(13) 3040-2020', cor: '#FFF3E0' },
-    { icone: '🕐', titulo: 'Horário', valor: 'Segunda a sexta, das 10h às 18h', cor: '#F3E5F5' },
-  ];
+  useEffect(() => {
+    let ativo = true;
 
-  const enviarMensagem = () => {
-    if (!nome.trim() || !email.trim() || !mensagem.trim()) return;
-    setEnviando(true);
-    setTimeout(() => {
-      setEnviando(false);
-      setEnviado(true);
+    async function carregarDados() {
+      setCarregando(true);
+      setErro('');
+
+      try {
+        const [empresaResponse, canaisResponse, assuntosResponse, faqResponse] = await Promise.all([
+          buscarInformacoesEmpresa(),
+          buscarCanaisAtendimento(),
+          buscarAssuntosContato(),
+          buscarFaqAtendimento(),
+        ]);
+
+        if (!ativo) return;
+
+        setEmpresa(empresaResponse);
+        setCanais(canaisResponse);
+        setAssuntos(assuntosResponse);
+        setFaq(faqResponse);
+        setAssunto(assuntosResponse[0]?.id || '');
+        setAssuntoAberto(false);
+      } catch (error) {
+        if (!ativo) return;
+        setErro('Não foi possível carregar os dados de atendimento agora.');
+      } finally {
+        if (ativo) {
+          setCarregando(false);
+        }
+      }
+    }
+
+    carregarDados();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  const enviarMensagem = async () => {
+    setErro('');
+    setSucesso('');
+    setProtocolo('');
+
+    try {
+      setEnviando(true);
+
+      const resposta = await enviarMensagemContato({
+        nome: nome.trim(),
+        email: email.trim(),
+        assunto,
+        mensagem: mensagem.trim(),
+      });
+
+      setSucesso(`Mensagem enviada com sucesso. Protocolo: ${resposta.protocolo}`);
+      setProtocolo(resposta.protocolo);
       setNome('');
       setEmail('');
       setMensagem('');
-      setAssunto('duvida');
-    }, 1800);
+      setAssunto(assuntos[0]?.id || '');
+      setAssuntoAberto(false);
+    } catch (error) {
+      setErro(error.message || 'Não foi possível enviar a mensagem agora.');
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  const assuntoSelecionado =
+    assuntos.find((item) => item.id === assunto)?.label || 'Selecione um assunto';
+
+  const selecionarAssunto = (id) => {
+    setAssunto(id);
+    setAssuntoAberto(false);
   };
 
   return (
     <View style={styles.container}>
       <Header titulo="Contato" navegarPara={navegarPara} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-
-        {/* Canais */}
         <Text style={styles.secaoTitulo}>Fale conosco</Text>
-        <View style={styles.canaisGrid}>
-          {canais.map((c) => (
-            <View key={c.titulo} style={[styles.canalCard, { backgroundColor: c.cor }]}>
-              <Text style={styles.canalIcone}>{c.icone}</Text>
-              <Text style={styles.canalTitulo}>{c.titulo}</Text>
-              <Text style={styles.canalValor}>{c.valor}</Text>
-            </View>
-          ))}
-        </View>
+        <Text style={styles.secaoSubtitulo}>
+          {empresa
+            ? `Atendimento da ${empresa.nome} para dúvidas sobre produtos, pedidos e entregas.`
+            : 'Atendimento para dúvidas sobre produtos, pedidos e entregas.'}
+        </Text>
 
-        {/* Formulário */}
+        {carregando ? (
+          <View style={styles.loadingCard}>
+            <Text style={styles.loadingTexto}>Carregando canais de atendimento...</Text>
+          </View>
+        ) : null}
+
+        {erro && !canais.length ? <Text style={styles.erroBanner}>{erro}</Text> : null}
+
+        {!carregando && canais.length > 0 ? (
+          <View style={styles.canaisGrid}>
+            {canais.map((canal) => (
+              <View key={canal.id} style={styles.canalCard}>
+                <Text style={styles.canalTitulo}>{canal.titulo}</Text>
+                <Text style={styles.canalDescricao}>{canal.descricao}</Text>
+                <Text style={styles.canalValor}>{canal.valor}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+
         <View style={styles.formulario}>
           <Text style={styles.formularioTitulo}>Enviar mensagem</Text>
           <Text style={styles.formularioAjuda}>
-            Para assuntos relacionados a pedidos, informe o número do pedido na mensagem.
+            Preencha seus dados para registrar um atendimento com a equipe da loja.
           </Text>
 
-          {enviado && (
+          {sucesso ? (
             <View style={styles.sucessoBanner}>
-              <Text style={styles.sucessoEmoji}>🎉</Text>
-              <View>
-                <Text style={styles.sucessoTitulo}>Mensagem enviada!</Text>
-                <Text style={styles.sucessoSub}>Retornaremos em até 24h.</Text>
-              </View>
+              <Text style={styles.sucessoTitulo}>Mensagem enviada</Text>
+              <Text style={styles.sucessoSub}>{sucesso}</Text>
             </View>
-          )}
+          ) : null}
+
+          {erro && canais.length > 0 ? <Text style={styles.erroBanner}>{erro}</Text> : null}
 
           <View style={styles.campo}>
             <Text style={styles.campoLabel}>Nome *</Text>
@@ -98,19 +182,41 @@ export default function ContatoScreen({ navegarPara }) {
 
           <View style={styles.campo}>
             <Text style={styles.campoLabel}>Assunto</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={assunto}
-                onValueChange={setAssunto}
-                style={styles.picker}
+            <View style={styles.selectWrapper}>
+              <TouchableOpacity
+                style={[styles.selectButton, assuntoAberto && styles.selectButtonAberto]}
+                onPress={() => setAssuntoAberto((prev) => !prev)}
+                activeOpacity={0.85}
               >
-                <Picker.Item label="Dúvida sobre produto" value="duvida" />
-                <Picker.Item label="Número do pedido" value="pedido" />
-                <Picker.Item label="Prazo de entrega" value="prazo" />
-                <Picker.Item label="Troca ou devolução" value="troca" />
-                <Picker.Item label="Promoções" value="promocoes" />
-                <Picker.Item label="Outros" value="outros" />
-              </Picker>
+                <Text style={styles.selectButtonTexto}>{assuntoSelecionado}</Text>
+                <Text style={styles.selectButtonIcone}>{assuntoAberto ? '▲' : '▼'}</Text>
+              </TouchableOpacity>
+
+              {assuntoAberto ? (
+                <View style={styles.selectLista}>
+                  {assuntos.map((item, index) => (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={[
+                        styles.selectOpcao,
+                        index === assuntos.length - 1 && styles.selectOpcaoUltima,
+                        assunto === item.id && styles.selectOpcaoAtiva,
+                      ]}
+                      onPress={() => selecionarAssunto(item.id)}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.selectOpcaoTexto,
+                          assunto === item.id && styles.selectOpcaoTextoAtivo,
+                        ]}
+                      >
+                        {item.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ) : null}
             </View>
           </View>
 
@@ -129,6 +235,8 @@ export default function ContatoScreen({ navegarPara }) {
             <Text style={styles.contadorCaracteres}>{mensagem.length}/500</Text>
           </View>
 
+          {protocolo ? <Text style={styles.protocoloTexto}>Protocolo atual: {protocolo}</Text> : null}
+
           <CustomButton
             titulo="Enviar Mensagem"
             onPress={enviarMensagem}
@@ -136,6 +244,18 @@ export default function ContatoScreen({ navegarPara }) {
             desabilitado={!nome.trim() || !email.trim() || !mensagem.trim()}
           />
         </View>
+
+        {!carregando && faq.length > 0 ? (
+          <View style={styles.faqCard}>
+            <Text style={styles.formularioTitulo}>FAQ de atendimento</Text>
+            {faq.map((item) => (
+              <View key={item.id} style={styles.faqItem}>
+                <Text style={styles.faqPergunta}>{item.pergunta}</Text>
+                <Text style={styles.faqResposta}>{item.resposta}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
 
         <View style={{ height: 20 }} />
       </ScrollView>
