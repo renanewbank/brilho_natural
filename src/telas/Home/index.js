@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,21 +12,34 @@ import styles from './styles';
 import Header from '../../components/Header';
 import ProductCard from '../../components/ProductCard';
 import CustomButton from '../../components/CustomButton';
+import { buscarCategorias } from '../../services/categoriasApi';
 import heroBackground from '../../../assets/cosmetics-free-image.jpg';
 import logoHome from '../../../assets/logo-bn-sem-fundo.png';
 
 export default function HomeScreen({ navegarPara, produtos = [], carregandoProdutos, erroProdutos }) {
   const [notificacoes, setNotificacoes] = useState(true);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState('Cabelo');
+  const [categorias, setCategorias] = useState([]);
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarCategorias() {
+      const categoriasResponse = await buscarCategorias();
+
+      if (!ativo) return;
+
+      setCategorias(categoriasResponse.filter((item) => item.nome !== 'Todos').slice(0, 4));
+    }
+
+    carregarCategorias();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   const destaquesBase = produtos.filter((p) => p.destaque);
-
-  const categorias = [
-    { nome: 'Cabelo' },
-    { nome: 'Corpo' },
-    { nome: 'Perfumes' },
-    { nome: 'Rosto' },
-  ];
 
   const destaques = destaquesBase
     .filter((p) => !categoriaSelecionada || p.categoria === categoriaSelecionada)

@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import styles from './styles';
 import Header from '../../components/Header';
 import ProductCard from '../../components/ProductCard';
-import { CATEGORIAS } from '../../dados/produtos';
+import { buscarCategorias } from '../../services/categoriasApi';
 
 export default function ProdutosScreen({ navegarPara, produtos = [], carregandoProdutos, erroProdutos }) {
   const [busca, setBusca] = useState('');
   const [categoriaAtiva, setCategoriaAtiva] = useState('Todos');
+  const [categorias, setCategorias] = useState([]);
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarCategorias() {
+      const categoriasResponse = await buscarCategorias();
+
+      if (!ativo) return;
+
+      setCategorias(categoriasResponse.map((item) => item.nome));
+    }
+
+    carregarCategorias();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   const produtosFiltrados = produtos
     .filter((p) => {
@@ -43,7 +62,7 @@ export default function ProdutosScreen({ navegarPara, produtos = [], carregandoP
 
       {/* Categorias */}
       <View style={styles.categoriasContainer}>
-        {CATEGORIAS.map((cat) => (
+        {categorias.map((cat) => (
           <TouchableOpacity
             key={cat}
             style={[styles.categoriaChip, categoriaAtiva === cat && styles.categoriaAtiva]}
