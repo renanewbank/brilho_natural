@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import styles from './styles';
-import Header from '../../componente/Header';
-import CustomButton from '../../componente/CustomButton';
-import AulaSlider from '../../componente/AulaSlider';
+import Header from '../../components/Header';
+import CustomButton from '../../components/CustomButton';
+import AulaSlider from '../../components/AulaSlider';
 
 const TIMELINE = [
   { ano: '2015', evento: 'Início da Brilho Natural Shop em Santos, SP.' },
@@ -49,7 +49,8 @@ export default function SobreScreen({ navegarPara }) {
             resizeMode="cover"
           />
           <View style={styles.heroOverlay}>
-            <Text style={styles.heroLogo}>🌿 Brilho Natural</Text>
+            <Text style={styles.heroTag}>Beleza e bem-estar</Text>
+            <Text style={styles.heroLogo}>Brilho Natural</Text>
             <Text style={styles.heroSlogan}>Produtos de beleza para realçar seu brilho natural</Text>
           </View>
         </View>

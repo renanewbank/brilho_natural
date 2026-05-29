@@ -32,9 +32,15 @@ export default function ProductCard({ produto, navegarPara }) {
             {mostrarDesconto ? <Text style={styles.precoOriginal}>De R$ {produto.precoOriginal.toFixed(2)}</Text> : null}
             <Text style={styles.preco}>R$ {produto.preco.toFixed(2)}</Text>
           </View>
-          <TouchableOpacity style={[styles.botao, !produto.disponivel && styles.botaoDesabilitado]} onPress={() => navegarPara('DetalheProduto', produto)}>
-            <Text style={styles.botaoTexto}>{produto.disponivel ? 'Ver' : 'Detalhes'}</Text>
-          </TouchableOpacity>
+          {produto.disponivel ? (
+            <TouchableOpacity style={styles.botao} onPress={() => navegarPara('DetalheProduto', produto)}>
+              <Text style={styles.botaoTexto}>Ver</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.indisponivelContainer}>
+              <Text style={styles.indisponivelTexto}>Indisponível</Text>
+            </View>
+          )}
         </View>
       </View>
     </TouchableOpacity>

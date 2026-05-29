@@ -33,7 +33,7 @@ export default StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 3,
   },
-  badgeTexto: { color: '#FFF', fontSize: 10, fontWeight: 'bold' },
+  badgeTexto: { color: '#FFF', fontSize: 10, fontWeight: '600' },
   info: { padding: 12 },
   categoria: { fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: 1 },
   nome: { fontSize: 14, fontWeight: 'bold', color: '#333', marginTop: 2, marginBottom: 4 },
@@ -41,6 +41,14 @@ export default StyleSheet.create({
   precoOriginal: { fontSize: 11, color: '#999', textDecorationLine: 'line-through' },
   preco: { fontSize: 16, fontWeight: 'bold', color: '#7B9E4F' },
   botao: { backgroundColor: '#7B9E4F', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 5 },
-  botaoDesabilitado: { backgroundColor: '#B0B0B0' },
   botaoTexto: { color: '#FFF', fontSize: 12, fontWeight: 'bold' },
+  indisponivelContainer: {
+    paddingHorizontal: 4,
+    paddingVertical: 5,
+  },
+  indisponivelTexto: {
+    color: '#A6A19A',
+    fontSize: 12,
+    fontWeight: '600',
+  },
 });

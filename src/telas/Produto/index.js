@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import styles from './styles';
-import Header from '../../componente/Header';
-import ProductCard from '../../componente/ProductCard';
+import Header from '../../components/Header';
+import ProductCard from '../../components/ProductCard';
 import { CATEGORIAS } from '../../dados/produtos';
 
 export default function ProdutosScreen({ navegarPara, produtos = [], carregandoProdutos, erroProdutos }) {
   const [busca, setBusca] = useState('');
   const [categoriaAtiva, setCategoriaAtiva] = useState('Todos');
 
-  const produtosFiltrados = produtos.filter((p) => {
-    const matchCategoria = categoriaAtiva === 'Todos' || p.categoria === categoriaAtiva;
-    const matchBusca = p.nome.toLowerCase().includes(busca.toLowerCase());
-    return matchCategoria && matchBusca;
-  });
+  const produtosFiltrados = produtos
+    .filter((p) => {
+      const matchCategoria = categoriaAtiva === 'Todos' || p.categoria === categoriaAtiva;
+      const matchBusca = p.nome.toLowerCase().includes(busca.toLowerCase());
+      return matchCategoria && matchBusca;
+    })
+    .sort((a, b) => {
+      if (a.disponivel === b.disponivel) return 0;
+      return a.disponivel ? -1 : 1;
+    });
 
   return (
     <View style={styles.container}>

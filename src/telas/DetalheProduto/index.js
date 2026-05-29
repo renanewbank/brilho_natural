@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import styles from './styles';
-import CustomButton from '../../componente/CustomButton';
-import RatingStars from '../../componente/RatingStars';
-import Header from '../../componente/Header';
-import AulaSlider from '../../componente/AulaSlider';
+import CustomButton from '../../components/CustomButton';
+import RatingStars from '../../components/RatingStars';
+import Header from '../../components/Header';
+import AulaSlider from '../../components/AulaSlider';
 import { buscarProdutoPorId } from '../../services/produtosApi';
 
 export default function DetalheProdutoScreen({ produto, navegarPara, adicionarAoCarrinho }) {

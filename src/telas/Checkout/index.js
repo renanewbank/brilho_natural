@@ -6,8 +6,8 @@ import {
   TextInput,
 } from 'react-native';
 import styles from './styles';
-import Header from '../../componente/Header';
-import CustomButton from '../../componente/CustomButton';
+import Header from '../../components/Header';
+import CustomButton from '../../components/CustomButton';
 import { buscarEnderecoPorCep } from '../../services/viacepApi';
 
 export default function CheckoutScreen({
@@ -176,7 +176,6 @@ export default function CheckoutScreen({
             <Text style={styles.chaveResumo}>Frete</Text>
             <Text style={styles.valorResumo}>{frete === 0 ? 'Grátis' : `R$ ${frete.toFixed(2)}`}</Text>
           </View>
-          <Text style={styles.freteInfo}>Frete gratuito conforme política vigente da loja.</Text>
           <View style={styles.divisor} />
           <View style={styles.linhaResumo}>
             <Text style={styles.totalChave}>Total</Text>

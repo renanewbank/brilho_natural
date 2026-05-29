@@ -7,8 +7,8 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import styles from './styles';
-import Header from '../../componente/Header';
-import CustomButton from '../../componente/CustomButton';
+import Header from '../../components/Header';
+import CustomButton from '../../components/CustomButton';
 
 export default function ContatoScreen({ navegarPara }) {
   const [nome, setNome] = useState('');

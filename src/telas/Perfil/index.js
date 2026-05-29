@@ -8,8 +8,8 @@ import {
   Switch,
 } from 'react-native';
 import styles from './styles';
-import Header from '../../componente/Header';
-import CustomButton from '../../componente/CustomButton';
+import Header from '../../components/Header';
+import CustomButton from '../../components/CustomButton';
 
 export default function PerfilScreen({ navegarPara, perfil, pedidos, salvarPerfil }) {
   const [nome, setNome] = useState(perfil?.nome || 'Cliente Brilho Natural');

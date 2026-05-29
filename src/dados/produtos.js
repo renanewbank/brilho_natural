@@ -151,4 +151,4 @@ export const PRODUTOS = [
   },
 ];
 
-export const CATEGORIAS = ['Todos', 'Cabelo', 'Corpo', 'Perfumes', 'Rosto', 'Mãos & Pés', 'Outros'];
+export const CATEGORIAS = ['Todos', 'Cabelo', 'Corpo', 'Perfumes', 'Rosto', 'Outros'];

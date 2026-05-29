@@ -8,9 +8,9 @@ import {
   TextInput,
 } from 'react-native';
 import styles from './styles';
-import Header from '../../componente/Header';
-import CartItem from '../../componente/CartItem';
-import CustomButton from '../../componente/CustomButton';
+import Header from '../../components/Header';
+import CartItem from '../../components/CartItem';
+import CustomButton from '../../components/CustomButton';
 
 export default function CarrinhoScreen({
   carrinho,
@@ -105,10 +105,9 @@ export default function CarrinhoScreen({
           <View style={styles.resumoLinha}>
             <Text style={styles.resumoChave}>Frete</Text>
             <Text style={[styles.resumoValor, frete === 0 && { color: '#4CAF50' }]}>
-              {frete === 0 ? 'Grátis 🎉' : `R$ ${frete.toFixed(2)}`}
+              {frete === 0 ? 'Grátis' : `R$ ${frete.toFixed(2)}`}
             </Text>
           </View>
-          <Text style={styles.freteInfo}>Frete gratuito conforme política vigente da loja.</Text>
 
           <View style={styles.divisor} />
 

@@ -58,7 +58,6 @@ export default StyleSheet.create({
   resumoLinha: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
   resumoChave: { fontSize: 14, color: '#666' },
   resumoValor: { fontSize: 14, color: '#333', fontWeight: '500' },
-  freteInfo: { fontSize: 12, color: '#7B9E4F', marginBottom: 10 },
   divisor: { height: 1, backgroundColor: '#EEE', marginVertical: 10 },
   totalChave: { fontSize: 16, fontWeight: 'bold', color: '#222' },
   totalValor: { fontSize: 20, fontWeight: 'bold', color: '#7B9E4F' },

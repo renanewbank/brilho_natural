@@ -9,42 +9,62 @@ import {
   Switch,
 } from 'react-native';
 import styles from './styles';
-import Header from '../../componente/Header';
-import ProductCard from '../../componente/ProductCard';
-import CustomButton from '../../componente/CustomButton';
+import Header from '../../components/Header';
+import ProductCard from '../../components/ProductCard';
+import CustomButton from '../../components/CustomButton';
+import heroBackground from '../../../assets/cosmetics-free-image.jpg';
+import logoHome from '../../../assets/logo-bn-sem-fundo.png';
 
 export default function HomeScreen({ navegarPara, produtos = [], carregandoProdutos, erroProdutos }) {
   const [notificacoes, setNotificacoes] = useState(true);
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState('Cabelo');
 
-  const destaques = produtos.filter((p) => p.destaque).slice(0, 6);
+  const destaquesBase = produtos.filter((p) => p.destaque);
 
   const categorias = [
-    { nome: 'Cabelo', icone: '💆', cor: '#E8F5E9' },
-    { nome: 'Corpo', icone: '🧴', cor: '#FFF3E0' },
-    { nome: 'Perfumes', icone: '🌸', cor: '#FCE4EC' },
-    { nome: 'Rosto', icone: '✨', cor: '#E3F2FD' },
-    { nome: 'Mãos & Pés', icone: '🫶', cor: '#F3E5F5' },
+    { nome: 'Cabelo' },
+    { nome: 'Corpo' },
+    { nome: 'Perfumes' },
+    { nome: 'Rosto' },
   ];
+
+  const destaques = destaquesBase
+    .filter((p) => !categoriaSelecionada || p.categoria === categoriaSelecionada)
+    .slice(0, 6);
 
   return (
     <View style={styles.container}>
-      <Header navegarPara={navegarPara} />
+      <Header
+        navegarPara={navegarPara}
+        logoSource={logoHome}
+        logoVariant="home"
+        semPaddingVertical
+      />
+      <View style={styles.faixaFrete}>
+        <Text style={styles.faixaFreteTexto}>Frete Grátis para todo o Brasil!</Text>
+      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-
         {/* Banner Hero */}
         <View style={styles.banner}>
           <Image
-            source={{ uri: 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800' }}
+            source={heroBackground}
             style={styles.bannerImagem}
             resizeMode="cover"
           />
           <View style={styles.bannerOverlay}>
-            <Text style={styles.bannerTag}>Beleza e bem-estar</Text>
-            <Text style={styles.bannerTitulo}>Realce seu{'\n'}brilho natural</Text>
-            <CustomButton
-              titulo="Ver Coleção"
-              onPress={() => navegarPara('Produtos')}
-            />
+            <View style={styles.heroConteudo}>
+              <Text style={styles.bannerTag}>Beleza e bem-estar</Text>
+              <Text style={styles.bannerTitulo}>Seleção multimarca para sua rotina de cuidado</Text>
+              <Text style={styles.bannerDescricao}>
+                Produtos para cabelo, corpo, perfumes e autocuidado em uma vitrine leve, atual e fácil de navegar.
+              </Text>
+              <View style={styles.heroAcoes}>
+                <CustomButton
+                  titulo="Ver Coleção"
+                  onPress={() => navegarPara('Produtos')}
+                />
+              </View>
+            </View>
           </View>
         </View>
 
@@ -55,11 +75,12 @@ export default function HomeScreen({ navegarPara, produtos = [], carregandoProdu
             {categorias.map((cat) => (
               <TouchableOpacity
                 key={cat.nome}
-                style={[styles.categoriaCard, { backgroundColor: cat.cor }]}
-                onPress={() => navegarPara('Produtos')}
+                style={[styles.categoriaCard, categoriaSelecionada === cat.nome && styles.categoriaCardAtiva]}
+                onPress={() => setCategoriaSelecionada(cat.nome)}
               >
-                <Text style={styles.categoriaIcone}>{cat.icone}</Text>
-                <Text style={styles.categoriaTexto}>{cat.nome}</Text>
+                <Text style={[styles.categoriaTexto, categoriaSelecionada === cat.nome && styles.categoriaTextoAtiva]}>
+                  {cat.nome}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -97,15 +118,6 @@ export default function HomeScreen({ navegarPara, produtos = [], carregandoProdu
               contentContainerStyle={{ paddingHorizontal: 4 }}
             />
           )}
-        </View>
-
-        {/* Banner promo */}
-        <View style={styles.promoBanner}>
-          <Text style={styles.promoEmoji}>🚚</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.promoTitulo}>Frete gratuito</Text>
-            <Text style={styles.promoSubtitulo}>Conforme política vigente da loja</Text>
-          </View>
         </View>
 
         {/* Notificações Switch */}

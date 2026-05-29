@@ -4,8 +4,8 @@ export default StyleSheet.create({
   botao: {
     backgroundColor: '#7B9E4F',
     borderRadius: 30,
-    paddingVertical: 14,
-    paddingHorizontal: 24,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 6,
